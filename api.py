@@ -60,6 +60,7 @@ def chats():
 
     if response_data:
         dialogs = 1
+        counter = 2
 
         for item in response_data['data']:
             sheet = workbook.active
@@ -67,16 +68,23 @@ def chats():
             text = generate_text(item)
             result = call_to_gpt(text)
             operator_name = ''
-            for message in response_data['data'][0]['messages']:
+            for message in item['messages']:
                 if message['type'] == 'Оператор':
                     operator_name = message['name']
 
             points = result[0].message.content.split('--')[1]
-            bad_words = points.split('[')[1].split(']')[0]
+            try:
+                bad_words = points.split('[')[1].split(']')[0]
+            except IndexError:
+                bad_words = " - "
             before_bad_words = points.split(', [')[0].split(', ')
-            type_of_chat = points.split('], ')[1]
+            try:
+                type_of_chat = points.split('], ')[1]
+            except IndexError:
+                all_items = points.split(', ')
+                type_of_chat = all_items[len(all_items) - 1]
 
-            chat_id = response_data['data'][0]['id']
+            chat_id = item['id']
             chat_url = CHAT_URL + str(chat_id)
 
             with open('result_chats.txt', 'a', encoding='utf-8') as file:
@@ -87,10 +95,9 @@ def chats():
                 file.write(f"{result[0].message.content.split('--')[0]}\n")
                 file.write("<========================================>\n")
 
-            counter = 2
             while True:
-                if sheet['A2'].value:
-                    if sheet['A2'].value == chat_url:
+                if sheet[f'A{counter}'].value:
+                    if sheet[f'A{counter}'].value == chat_url:
                         break
                     counter += 1
                 else:
