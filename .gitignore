@@ -1,0 +1,8 @@
+.env
+check.json
+result_chats.txt
+result_audio.txt
+venv/
+.idea
+audios/
+ffmpeg.exe
