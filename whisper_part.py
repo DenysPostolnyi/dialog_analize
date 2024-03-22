@@ -4,6 +4,8 @@ import whisper
 import torch
 import time  # Import the time module
 
+from config import AUDIOS_FOLDER
+
 prompt = """
         Ти асистент, який проводить семантичний аналіз діалогу за такими крітериями:
 -	Чіткість та зрозумілість висловленої думки (оцінка від 0 до 10, якщо не 10 - чому)
@@ -29,7 +31,7 @@ prompt = """
 
 def audios():
     dialogs = 1
-    for item in os.listdir("audios"):
+    for item in os.listdir(AUDIOS_FOLDER):
         torch.cuda.is_available()
         DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 
