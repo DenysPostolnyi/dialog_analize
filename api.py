@@ -1,8 +1,6 @@
 import requests
-from openai import OpenAI
 
-from config import URL, workbook, API_KEY, CHAT_URL, FILE_NAME
-from whisper_part import audios
+from config import URL, workbook, CHAT_URL, FILE_NAME, client
 
 prompt = """
         Ти асистент, який проводить семантичний аналіз діалогу за такими крітериями:
@@ -26,8 +24,6 @@ prompt = """
 --10, 8, Так, 7, 7, 8, 7, Так, ["тоді", "якщо", "там", "для цього", "то"], обслуговування
         """
 
-client = OpenAI(api_key=API_KEY)
-
 
 def api_request():
     response = requests.get(URL)
@@ -46,13 +42,14 @@ def generate_text(dialogue):
     return text_for_call
 
 
-def call_to_gpt(message_text):
+def call_to_gpt(prompt_to_gpt, message_text):
     response = client.chat.completions.create(model="gpt-3.5-turbo-0125",
                                               messages=[
-                                                  {"role": "system", "content": prompt},
+                                                  {"role": "system", "content": prompt_to_gpt},
                                                   {"role": "user", "content": message_text},
                                               ])
-    return response.choices
+    print("Used to analyze tokens: ", response.usage.total_tokens)
+    return [response.choices, response.usage.total_tokens]
 
 
 def chats():
@@ -66,7 +63,7 @@ def chats():
             sheet = workbook.active
 
             text = generate_text(item)
-            result = call_to_gpt(text)
+            result, tokens = call_to_gpt(text, prompt)
             operator_name = ''
             for message in item['messages']:
                 if message['type'] == 'Оператор':

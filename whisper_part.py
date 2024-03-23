@@ -4,7 +4,7 @@ import whisper
 import torch
 import time  # Import the time module
 
-from config import AUDIOS_FOLDER
+from config import AUDIOS_FOLDER, DEVICE, model
 
 prompt = """
         Ти асистент, який проводить семантичний аналіз діалогу за такими крітериями:
@@ -32,10 +32,6 @@ prompt = """
 def audios():
     dialogs = 1
     for item in os.listdir(AUDIOS_FOLDER):
-        torch.cuda.is_available()
-        DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-
-        model = whisper.load_model("medium", device=DEVICE)
         start_time = time.time()
 
         result = model.transcribe(f"audios/{item}", language="uk", fp16=False,
