@@ -6,7 +6,7 @@ import wave
 import requests
 
 from config import AUDIOS_FOLDER, SPLIT_AUDIOS, RESULT_EMOTIONS_FILE, EMOTIONS_API_KEY, EMOTIONS_API_KEY_PASSWORD, \
-    API_EMOTIONS_URL
+    API_EMOTIONS_URL, workbook_emotions, FILE_EMOTIONS
 
 
 def split_audio(file):
@@ -66,7 +66,8 @@ def get_emotions(file):
 
 
 if __name__ == '__main__':
-    data = {"data": []}
+    row = 2
+    sheet = workbook_emotions.active
 
     for file in os.listdir(AUDIOS_FOLDER):
         file_to_split = os.path.join(AUDIOS_FOLDER, file)
@@ -76,13 +77,59 @@ if __name__ == '__main__':
         client_emotion = get_emotions(client_filepath)
         operator_emotion = get_emotions(operator_filepath)
 
-        data["data"].append({
-            "dialog": file,
-            "moods": {
-                "client mood": client_emotion,
-                "operator mood": operator_emotion
-            }
-        })
+        sheet.cell(row=row, column=1, value=file)
+        sheet.cell(row=row, column=2, value="Абонент")
+        sheet.cell(row=row + 1, column=2, value="Оператор")
 
-    with open(RESULT_EMOTIONS_FILE, 'w', encoding='utf-8') as f:
-        json.dump(data, f, ensure_ascii=False, indent=2)
+        sheet.cell(row=row, column=3, value=client_emotion['aggression'])
+        sheet.cell(row=row + 1, column=3, value=operator_emotion['aggression'])
+
+        sheet.cell(row=row, column=4, value=client_emotion['anticipation'])
+        sheet.cell(row=row + 1, column=4, value=operator_emotion['anticipation'])
+
+        sheet.cell(row=row, column=5, value=client_emotion['arousal'])
+        sheet.cell(row=row + 1, column=5, value=operator_emotion['arousal'])
+
+        sheet.cell(row=row, column=6, value=client_emotion['atmosphere'])
+        sheet.cell(row=row + 1, column=6, value=operator_emotion['atmosphere'])
+
+        sheet.cell(row=row, column=7, value=client_emotion['concentration'])
+        sheet.cell(row=row + 1, column=7, value=operator_emotion['concentration'])
+
+        sheet.cell(row=row, column=8, value=client_emotion['energy'])
+        sheet.cell(row=row + 1, column=8, value=operator_emotion['energy'])
+
+        sheet.cell(row=row, column=9, value=client_emotion['excitement'])
+        sheet.cell(row=row + 1, column=9, value=operator_emotion['excitement'])
+
+        sheet.cell(row=row, column=10, value=client_emotion['hesitation'])
+        sheet.cell(row=row + 1, column=10, value=operator_emotion['hesitation'])
+
+        sheet.cell(row=row, column=11, value=client_emotion['imagination'])
+        sheet.cell(row=row + 1, column=11, value=operator_emotion['imagination'])
+
+        sheet.cell(row=row, column=12, value=client_emotion['joy'])
+        sheet.cell(row=row + 1, column=12, value=operator_emotion['joy'])
+
+        sheet.cell(row=row, column=13, value=client_emotion['mentalEffort'])
+        sheet.cell(row=row + 1, column=13, value=operator_emotion['mentalEffort'])
+
+        sheet.cell(row=row, column=14, value=client_emotion['overallCognitiveActivity'])
+        sheet.cell(row=row + 1, column=14, value=operator_emotion['overallCognitiveActivity'])
+
+        sheet.cell(row=row, column=15, value=client_emotion['sad'])
+        sheet.cell(row=row + 1, column=15, value=operator_emotion['sad'])
+
+        sheet.cell(row=row, column=16, value=client_emotion['stress'])
+        sheet.cell(row=row + 1, column=16, value=operator_emotion['stress'])
+
+        sheet.cell(row=row, column=17, value=client_emotion['uncertainty'])
+        sheet.cell(row=row + 1, column=17, value=operator_emotion['uncertainty'])
+
+        sheet.cell(row=row, column=18, value=client_emotion['uneasy'])
+        sheet.cell(row=row + 1, column=18, value=operator_emotion['uneasy'])
+
+        row += 2
+        workbook_emotions.save(FILE_EMOTIONS)
+
+    print("Success")
