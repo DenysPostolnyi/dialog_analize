@@ -45,7 +45,7 @@ def audios():
         print(f"Transcription Time: {elapsed_time} seconds")
         from api import call_to_gpt
 
-        result = call_to_gpt(result_text)
+        result = call_to_gpt(prompt, result_text)
 
         with open('result_audios.txt', 'a', encoding='utf-8') as file:
             file.write("<========================================>\n")
